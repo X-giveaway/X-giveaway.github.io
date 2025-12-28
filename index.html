@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>X-GET Giveaway Claim</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { font-family: 'Space Grotesk', sans-serif; }
+body {
+  background: linear-gradient(135deg, #0f172a, #020617);
+}
+</style>
+</head>
+
+<body class="min-h-screen text-white">
+
+<!-- HEADER -->
+<div class="max-w-3xl mx-auto px-4 py-10 text-center">
+  <h1 class="text-4xl font-bold text-sky-400">X-GET Giveaway</h1>
+  <p class="text-gray-300 mt-2">Official Winner Claim Portal</p>
+</div>
+
+<!-- CLAIM NOW -->
+<div class="text-center">
+  <button id="claim-now"
+    class="bg-sky-500 hover:bg-sky-600 px-8 py-4 rounded-xl font-bold text-lg">
+    Claim Now
+  </button>
+</div>
+
+<!-- SLOT CODE MODAL -->
+<div id="slot-modal"
+  class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50">
+
+  <div class="bg-slate-900 p-6 rounded-xl w-80 text-center border border-sky-500/30">
+    <h2 class="text-xl font-bold mb-4 text-sky-400">Enter Slot Code</h2>
+
+    <input id="slot-input" placeholder="XG-XXXX-XXXX"
+      class="w-full px-4 py-3 mb-4 rounded-lg bg-slate-800 border border-sky-500/30 text-white text-center tracking-widest" />
+
+    <button id="verify-slot"
+      class="w-full bg-green-500 hover:bg-green-600 py-3 rounded-lg font-semibold">
+      Verify Code
+    </button>
+
+    <p id="slot-msg" class="text-red-400 text-sm mt-3 hidden"></p>
+  </div>
+</div>
+
+<!-- CLAIM FORM -->
+<div id="claim-section" class="max-w-3xl mx-auto px-4 mt-12 hidden">
+  <div class="bg-slate-800/60 border border-sky-500/30 rounded-xl p-8">
+
+    <h2 class="text-2xl font-bold mb-6">Winner Delivery Details 🎉</h2>
+
+    <form id="claim-form" class="space-y-4">
+
+      <input required id="name" placeholder="Full Name"
+        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-sky-500/30" />
+
+      <input required id="email" type="email" placeholder="Email Address"
+        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-sky-500/30" />
+
+      <input required id="phone" placeholder="Phone Number"
+        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-sky-500/30" />
+
+      <textarea required id="address" rows="3" placeholder="Delivery Address"
+        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-sky-500/30"></textarea>
+
+      <input id="prize"
+        class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-sky-500/30 cursor-not-allowed opacity-70"
+        readonly />
+
+      <button
+        class="w-full bg-sky-500 hover:bg-sky-600 py-4 rounded-lg font-semibold text-lg">
+        Submit Claim
+      </button>
+
+    </form>
+
+    <p class="text-xs text-gray-400 mt-4 text-center">
+      Demo giveaway system. No payment required.
+    </p>
+
+  </div>
+</div>
+
+<script>
+/* CLAIM NOW */
+document.getElementById("claim-now").onclick = () => {
+  document.getElementById("slot-modal").classList.remove("hidden");
+};
+
+/* VERIFY SLOT CODE */
+document.getElementById("verify-slot").onclick = () => {
+  const input = document.getElementById("slot-input").value.trim();
+  const msg = document.getElementById("slot-msg");
+  msg.classList.add("hidden");
+
+  const adminCode = JSON.parse(localStorage.getItem("ADMIN_CODE"));
+
+  if (!adminCode) {
+    msg.textContent = "No active slot code";
+    msg.classList.remove("hidden");
+    return;
+  }
+
+  if (input !== adminCode.code) {
+    msg.textContent = "Invalid slot code";
+    msg.classList.remove("hidden");
+    return;
+  }
+
+  if (Date.now() > adminCode.expires) {
+    msg.textContent = "Slot code expired";
+    msg.classList.remove("hidden");
+    return;
+  }
+
+  if (adminCode.used) {
+    msg.textContent = "Slot code already used";
+    msg.classList.remove("hidden");
+    return;
+  }
+
+  // MARK USED
+  adminCode.used = true;
+  localStorage.setItem("ADMIN_CODE", JSON.stringify(adminCode));
+
+  // RANDOM PRIZE
+  const prizes = [
+    "Tesla Model Y",
+    "Tesla Model 3",
+    "Starlink Full Kit"
+  ];
+  const prize = prizes[Math.floor(Math.random() * prizes.length)];
+
+  document.getElementById("prize").value = prize;
+
+  // SHOW FORM
+  document.getElementById("slot-modal").classList.add("hidden");
+  document.getElementById("claim-section").classList.remove("hidden");
+  document.getElementById("claim-section").scrollIntoView({ behavior: "smooth" });
+};
+
+/* CLAIM FORM REDIRECTION TO INVOICE */
+document.getElementById("claim-form").addEventListener("submit", e => {
+  e.preventDefault();
+
+  // Collect form data
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const prize = document.getElementById("prize").value.trim();
+
+  // Build query string
+  const params = new URLSearchParams({ name, email, phone, address, prize });
+
+  // Redirect to invoice.html with all data
+  window.location.href = "invoice.html?" + params.toString();
+});
+</script>
+
+</body>
+</html>

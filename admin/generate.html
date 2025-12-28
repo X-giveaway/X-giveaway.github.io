@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Slot Code Generator</title>
+<style>
+body { font-family: Arial; background:#0f172a; color:white; padding:40px }
+button { padding:15px; font-size:16px }
+pre { margin-top:20px }
+</style>
+</head>
+<body>
+
+<h1>Admin Slot Code Generator</h1>
+<button onclick="generate()">Generate Code</button>
+
+<pre id="output"></pre>
+
+<script>
+function generate() {
+  const code =
+    "XG-" +
+    Math.random().toString(36).substr(2,4).toUpperCase() +
+    "-" +
+    Math.random().toString(36).substr(2,4).toUpperCase();
+
+  const data = {
+    code,
+    created: Date.now(),
+    expires: Date.now() + (30 * 60 * 1000),
+    used: false
+  };
+
+  localStorage.setItem("ADMIN_CODE", JSON.stringify(data));
+  document.getElementById("output").textContent =
+    "Slot Code:\n" + code + "\n\nExpires in 30 minutes";
+}
+</script>
+
+</body>
+</html>

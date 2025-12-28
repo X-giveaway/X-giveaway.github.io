@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>X-GET Giveaway Invoice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Invoice to Image -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { font-family: 'Space Grotesk', sans-serif; }
+.gradient-bg { background: linear-gradient(135deg, #0f172a, #020617); }
+</style>
+</head>
+
+<body class="gradient-bg min-h-screen text-white">
+
+<!-- HEADER -->
+<div class="max-w-3xl mx-auto px-4 py-10 text-center">
+  <h1 class="text-4xl font-bold text-sky-400">X-GET Giveaway</h1>
+  <p class="text-gray-300 mt-2">Your Claim Invoice</p>
+</div>
+
+<!-- INVOICE -->
+<div id="invoice-wrapper" class="max-w-xl mx-auto px-4 mt-12">
+
+  <div id="invoice" class="bg-white text-black rounded-xl p-6">
+    <h3 class="text-2xl font-bold text-center mb-4">X-GET GIVEAWAY CLAIM</h3>
+
+    <div class="text-sm space-y-2">
+      <p><strong>Claim ID:</strong> <span id="inv-id"></span></p>
+      <p><strong>Date:</strong> <span id="inv-date"></span></p>
+      <hr>
+      <p><strong>Name:</strong> <span id="inv-name"></span></p>
+      <p><strong>Email:</strong> <span id="inv-email"></span></p>
+      <p><strong>Phone:</strong> <span id="inv-phone"></span></p>
+      <p><strong>Prize:</strong> <span id="inv-prize"></span></p>
+      <p><strong>Delivery Address:</strong><br><span id="inv-address"></span></p>
+      <hr>
+      <p class="font-semibold text-green-700">Status: CONFIRMED WINNER</p>
+    </div>
+  </div>
+
+  <button id="download-btn"
+    class="w-full mt-6 bg-green-500 hover:bg-green-600 py-3 rounded-lg font-semibold">
+    Download Invoice Image
+  </button>
+
+</div>
+
+<script>
+// Get query parameters from URL
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name") || "";
+const email = params.get("email") || "";
+const phone = params.get("phone") || "";
+const address = params.get("address") || "";
+const prize = params.get("prize") || "";
+
+// Fill invoice automatically
+document.getElementById('inv-id').textContent = 'XG-' + Math.floor(100000 + Math.random() * 900000);
+document.getElementById('inv-date').textContent = new Date().toLocaleString();
+document.getElementById('inv-name').textContent = name;
+document.getElementById('inv-email').textContent = email;
+document.getElementById('inv-phone').textContent = phone;
+document.getElementById('inv-address').textContent = address;
+document.getElementById('inv-prize').textContent = prize;
+
+// Download invoice as image
+document.getElementById('download-btn').addEventListener('click', () => {
+  html2canvas(document.getElementById('invoice')).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'xget-claim-invoice.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+});
+</script>
+
+</body>
+</html>
